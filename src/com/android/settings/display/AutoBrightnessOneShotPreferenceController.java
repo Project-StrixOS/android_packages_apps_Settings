@@ -18,7 +18,7 @@ package com.android.settings.display;
 
 import android.content.Context;
 
-import lineageos.providers.LineageSettings;
+import strixos.providers.LineageSettings;
 
 import com.android.settings.R;
 import com.android.settings.core.TogglePreferenceController;

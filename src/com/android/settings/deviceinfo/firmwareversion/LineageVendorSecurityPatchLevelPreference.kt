@@ -71,6 +71,6 @@ class LineageVendorSecurityPatchLevelPreference :
         const val AOSP_VENDOR_SECURITY_PATCH_PROPERTY: String =
             "ro.vendor.build.security_patch"
         const val LINEAGE_VENDOR_SECURITY_PATCH_PROPERTY: String =
-            "ro.lineage.build.vendor_security_patch"
+            "ro.los.build.vendor_security_patch"
     }
 }

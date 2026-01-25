@@ -24,7 +24,7 @@ import com.android.settingslib.datastore.AbstractKeyedDataObservable
 import com.android.settingslib.datastore.KeyValueStore
 import com.android.settingslib.datastore.Permissions
 import com.android.settingslib.metadata.PreferenceChangeReason
-import lineageos.providers.LineageSettings
+import strixos.providers.LineageSettings
 
 @Suppress("UNCHECKED_CAST")
 class DarkModeBlackThemeStorage(private val context: Context) :

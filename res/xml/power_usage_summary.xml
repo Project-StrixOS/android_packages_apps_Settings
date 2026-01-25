@@ -70,7 +70,7 @@
         <!-- Battery light -->
         <lineageos.preference.LineagePartsPreference
             android:key="battery_lights"
-            settings:requiresConfig="@*lineageos.platform:integer/config_deviceLightCapabilities"
+            settings:requiresConfig="@*strixos.platform:integer/config_deviceLightCapabilities"
             settings:requiresConfigMask="64" />
     </com.android.settingslib.widget.UntitledPreferenceCategory>
 

@@ -5997,4 +5997,8 @@
     <string name="safety_center_account_security_search_terms" msgid="3950829613581775913"></string>
     <string name="safety_center_device_finder_search_terms" msgid="452013643838126923"></string>
     <string name="safety_center_system_component_update_search_terms" msgid="3110390275537109543"></string>
+
+    <!-- Ignore window secure -->
+    <string name="ignore_window_secure_title">"忽略窗口安全标志"</string>
+    <string name="ignore_window_secure_summary">"取消所有应用的截屏和录屏限制。这在某些情况下可能很方便，但可能会导致隐私泄露。"</string>
 </resources>

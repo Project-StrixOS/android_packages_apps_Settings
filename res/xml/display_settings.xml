@@ -140,7 +140,7 @@
         <lineageos.preference.LineagePartsPreference
             android:key="live_display_color_profile"
             settings:replacesKey="color_mode"
-            settings:requiresConfig="@*lineageos.platform:bool/config_enableLiveDisplay"
+            settings:requiresConfig="@*strixos.platform:bool/config_enableLiveDisplay"
             settings:requiresFeature="lineagehardware:FEATURE_DISPLAY_MODES" />
 
         <Preference

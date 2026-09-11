@@ -547,6 +547,17 @@
         </activity>
 
         <activity
+            android:name=".network.NetworkSetupActivity"
+            android:exported="true">
+            <intent-filter android:priority="1">
+                <action android:name="android.settings.NETWORK_PROVIDER_SETUP" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
+                android:value="true" />
+        </activity>
+
+        <activity
             android:name=".wifi.WifiPickerActivity"
             android:permission="android.permission.CHANGE_WIFI_STATE"
             android:exported="true">
@@ -3361,6 +3372,11 @@
             android:enableOnBackInvokedCallback="false"
             android:excludeFromRecents="true" />
 
+        <activity android:name=".password.ChooseLockPatternSize"
+            android:exported="false"
+            android:enableOnBackInvokedCallback="false"
+            android:theme="@style/GlifTheme.Light" />
+
         <activity android:name=".password.SetupChooseLockPattern"
             android:exported="false"
             android:enableOnBackInvokedCallback="false"
@@ -6107,6 +6123,17 @@
                        android:value="true" />
         </activity>
 
+        <activity android:name=".backup.transport.TransportActivity"
+                  android:label="@string/backup_transport_title"
+                  android:icon="@drawable/ic_settings_backup"
+                  android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="settings"
+                      android:host="com.android.settings.backup.transport" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".Settings$ContentProtectionSettingsActivity"
             android:label="@string/content_protection_preference_title"

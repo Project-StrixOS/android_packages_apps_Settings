@@ -217,7 +217,17 @@ public class FingerprintSettings extends SubSettings {
             if (manager == null || !manager.isHardwareDetected()) {
                 return null;
             }
-            if (manager.isPowerbuttonFps()) {
+            List<FingerprintSensorPropertiesInternal> sensorProperties =
+                    manager.getSensorPropertiesInternal();
+            boolean isUdfps = false;
+            for (FingerprintSensorPropertiesInternal prop : sensorProperties) {
+                if (prop.isAnyUdfpsType()) {
+                    isUdfps = true;
+                    break;
+                }
+            }
+            if (!isUdfps && context.getResources().getBoolean(
+                    org.lineageos.platform.internal.R.bool.config_fingerprintWakeAndUnlock)) {
                 controllers.add(
                         new FingerprintUnlockCategoryController(
                                 context,
@@ -294,6 +304,8 @@ public class FingerprintSettings extends SubSettings {
                 "biometrics_authentication_requested";
         private static final String KEY_BIOMETRICS_USE_FINGERPRINT_TO_CATEGORY =
                 "biometric_settings_use_fingerprint_to";
+        private static final String KEY_GK_PW_HANDLE =
+                "gk_pw_handle";
 
         private static final int MSG_REFRESH_FINGERPRINT_TEMPLATES = 1000;
         private static final int MSG_FINGER_AUTH_SUCCESS = 1001;
@@ -348,6 +360,7 @@ public class FingerprintSettings extends SubSettings {
         private boolean mHasRunChallengeInvoker = false;
 
         private long mChallenge;
+        private long mGkPwHandle;
 
         private static final String TAG_AUTHENTICATE_SIDECAR = "authenticate_sidecar";
         private static final String TAG_REMOVAL_SIDECAR = "removal_sidecar";
@@ -637,6 +650,7 @@ public class FingerprintSettings extends SubSettings {
                         mHasFirstEnrolled);
                 mBiometricsAuthenticationRequested = savedInstanceState.getBoolean(
                         KEY_BIOMETRICS_AUTHENTICATION_REQUESTED);
+                mGkPwHandle = savedInstanceState.getLong(KEY_GK_PW_HANDLE);
             }
 
             // (mLaunchedConfirm or mIsEnrolling) means that we are waiting an activity result.
@@ -671,11 +685,18 @@ public class FingerprintSettings extends SubSettings {
                                 DevicePolicyManager.KEYGUARD_DISABLE_FINGERPRINT, mUserId) != null;
             }
 
-            final Intent helpIntent = HelpUtils.getHelpIntent(
-                    activity, getString(getHelpResource()), activity.getClass().getName());
-            final View.OnClickListener learnMoreClickListener = (v) -> {
-                activity.startActivityForResult(helpIntent, 0);
-            };
+            final Intent helpIntent;
+            final View.OnClickListener learnMoreClickListener;
+            if (getHelpResource() != 0) {
+                helpIntent = HelpUtils.getHelpIntent(
+                        activity, getString(getHelpResource()), activity.getClass().getName());
+                learnMoreClickListener = (v) -> {
+                    activity.startActivityForResult(helpIntent, 0);
+                };
+            } else {
+                helpIntent = null;
+                learnMoreClickListener = null;
+            }
 
             mFooterColumns.clear();
             if (isFingerprintDisabledByAdmin) {
@@ -715,11 +736,13 @@ public class FingerprintSettings extends SubSettings {
                 column2.mTitle = getText(
                         R.string.security_fingerprint_disclaimer_lockscreen_disabled_2
                 );
-                if (isSfps()) {
-                    column2.mLearnMoreOverrideText = getText(
-                            R.string.security_settings_fingerprint_settings_footer_learn_more);
+                if (helpIntent != null) {
+                    if (!isUdfps() && isScreenOffUnlcokSupported()) {
+                        column2.mLearnMoreOverrideText = getText(
+                                R.string.security_settings_fingerprint_settings_footer_learn_more);
+                    }
+                    column2.mLearnMoreClickListener = learnMoreClickListener;
                 }
-                column2.mLearnMoreClickListener = learnMoreClickListener;
                 mFooterColumns.add(column2);
             } else {
                 final FooterColumn column = new FooterColumn();
@@ -730,17 +753,23 @@ public class FingerprintSettings extends SubSettings {
                         ? R.string.private_space_fingerprint_enroll_introduction_message
                         : R.string.security_settings_fingerprint_enroll_introduction_v3_message,
                         DeviceHelper.getDeviceName(getActivity()));
-                column.mLearnMoreClickListener = learnMoreClickListener;
-                column.mLearnMoreOverrideText = getText(
-                        featureProvider.getSettingPageFooterLearnMoreDescription());
+                if (helpIntent != null) {
+                    column.mLearnMoreClickListener = learnMoreClickListener;
+                    column.mLearnMoreOverrideText = getText(
+                            featureProvider.getSettingPageFooterLearnMoreDescription());
+                }
                 mFooterColumns.add(column);
             }
         }
 
         private boolean isUdfps() {
-            for (FingerprintSensorPropertiesInternal prop : mSensorProperties) {
-                if (prop.isAnyUdfpsType()) {
-                    return true;
+            mFingerprintManager = Utils.getFingerprintManagerOrNull(getActivity());
+            if (mFingerprintManager != null) {
+                mSensorProperties = mFingerprintManager.getSensorPropertiesInternal();
+                for (FingerprintSensorPropertiesInternal prop : mSensorProperties) {
+                    if (prop.isAnyUdfpsType()) {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -763,6 +792,9 @@ public class FingerprintSettings extends SubSettings {
             if (isUdfps()) {
                 return getContext().getResources().getBoolean(
                         com.android.internal.R.bool.config_screen_off_udfps_enabled);
+            } else if (!isUdfps()) {
+                return getContext().getResources().getBoolean(
+                        org.lineageos.platform.internal.R.bool.config_fingerprintWakeAndUnlock);
             }
             return false;
         }
@@ -809,7 +841,8 @@ public class FingerprintSettings extends SubSettings {
             // This needs to be after setting ids, otherwise
             // |mRequireScreenOnToAuthPreferenceController.isChecked| is always checking the primary
             // user instead of the user with |mUserId|.
-            if (isSfps() || (screenOffUnlockUdfps() && isScreenOffUnlcokSupported())
+            if ((!isUdfps() && isScreenOffUnlcokSupported())
+                    || (screenOffUnlockUdfps() && isScreenOffUnlcokSupported())
                     || getExtPreferenceProvider(requireContext()).getSize() > 0) {
                 addFingerprintUnlockCategory();
             }
@@ -918,13 +951,15 @@ public class FingerprintSettings extends SubSettings {
                         this::fingerprintUnlockCategoryHasVisibleChild);
             }
 
-            if (isSfps()) {
+            if (!isUdfps() && isScreenOffUnlcokSupported()) {
                 setupFingerprintUnlockCategoryPreferencesForScreenOnToAuth();
             } else if (screenOffUnlockUdfps() && isScreenOffUnlcokSupported()) {
                 setupFingerprintUnlockCategoryPreferencesForScreenOffUnlock();
             }
             setupExtFingerprintPreferences();
-            updateFingerprintUnlockCategoryVisibility();
+            if (mFingerprintUnlockCategoryPreferenceController != null) {
+                updateFingerprintUnlockCategoryVisibility();
+            }
         }
 
         private void updateFingerprintUnlockCategoryVisibility() {
@@ -1033,7 +1068,8 @@ public class FingerprintSettings extends SubSettings {
         private void updatePreferencesAfterFingerprintRemoved() {
             updateAddPreference();
             updateUseFingerprintToEnableStatus();
-            if (isSfps() || (screenOffUnlockUdfps() && isScreenOffUnlcokSupported())) {
+            if ((!isUdfps() && isScreenOffUnlcokSupported()) ||
+                    (screenOffUnlockUdfps() && isScreenOffUnlcokSupported())) {
                 updateFingerprintUnlockCategoryVisibility();
             }
             updatePreferences();
@@ -1195,6 +1231,7 @@ public class FingerprintSettings extends SubSettings {
             outState.putBoolean(KEY_HAS_RUN_CHALLENGE_INVOKER, mHasRunChallengeInvoker);
             outState.putBoolean(KEY_BIOMETRICS_AUTHENTICATION_REQUESTED,
                     mBiometricsAuthenticationRequested);
+            outState.putLong(KEY_GK_PW_HANDLE, mGkPwHandle);
         }
 
         @Override
@@ -1311,7 +1348,7 @@ public class FingerprintSettings extends SubSettings {
         private List<AbstractPreferenceController> buildPreferenceControllers(Context context) {
             final List<AbstractPreferenceController> controllers =
                     createThePreferenceControllers(context);
-            if (isSfps()) {
+            if (!isUdfps() && isScreenOffUnlcokSupported()) {
                 for (AbstractPreferenceController controller : controllers) {
                     if (controller.getPreferenceKey() == KEY_FINGERPRINT_UNLOCK_CATEGORY) {
                         mFingerprintUnlockCategoryPreferenceController =
@@ -1358,6 +1395,7 @@ public class FingerprintSettings extends SubSettings {
                 if (resultCode == RESULT_FINISHED || resultCode == RESULT_OK) {
                     runChallengeGeneratedInvokers();
                     if (BiometricUtils.containsGatekeeperPasswordHandle(data)) {
+                        mGkPwHandle = BiometricUtils.getGatekeeperPasswordHandle(data);
                         final Utils.BiometricStatus biometricAuthStatus =
                                 Utils.requestBiometricAuthenticationForMandatoryBiometrics(
                                         getActivity(),
@@ -1366,9 +1404,9 @@ public class FingerprintSettings extends SubSettings {
                         if (biometricAuthStatus != Utils.BiometricStatus.NOT_ACTIVE) {
                             Utils.launchBiometricPromptForMandatoryBiometrics(this,
                                     BIOMETRIC_AUTH_REQUEST,
-                                    mUserId, true /* hideBackground */, data);
+                                    mUserId, true /* hideBackground */);
                         } else {
-                            handleAuthenticationSuccessful(data);
+                            handleAuthenticationSuccessful(mGkPwHandle);
                         }
                     } else {
                         Log.d(TAG, "Data null or GK PW missing");
@@ -1423,7 +1461,11 @@ public class FingerprintSettings extends SubSettings {
             } else if (requestCode == BIOMETRIC_AUTH_REQUEST) {
                 mBiometricsAuthenticationRequested = false;
                 if (resultCode == RESULT_OK) {
-                    handleAuthenticationSuccessful(data);
+                    if (mGkPwHandle == 0L) {
+                        Log.e(TAG, "Gatekeeper password not set.");
+                    } else {
+                        handleAuthenticationSuccessful(mGkPwHandle);
+                    }
                 } else {
                     if (resultCode
                             == ConfirmDeviceCredentialActivity.BIOMETRIC_LOCKOUT_ERROR_RESULT) {
@@ -1479,7 +1521,7 @@ public class FingerprintSettings extends SubSettings {
             }
         }
 
-        private void handleAuthenticationSuccessful(Intent data) {
+        private void handleAuthenticationSuccessful(long gkPwHandle) {
             if (!mHasFirstEnrolled && !mIsEnrolling) {
                 final Activity activity = getActivity();
                 if (activity != null) {
@@ -1494,8 +1536,7 @@ public class FingerprintSettings extends SubSettings {
                 // Token and challenge will be updated later through the activity result
                 // of AUTO_ADD_FIRST_FINGERPRINT_REQUEST.
                 mIsEnrolling = true;
-                addFirstFingerprint(
-                        BiometricUtils.getGatekeeperPasswordHandle(data));
+                addFirstFingerprint(gkPwHandle);
             } else {
                 mFingerprintManager.generateChallenge(mUserId,
                         (sensorId, userId, challenge) -> {
@@ -1509,10 +1550,10 @@ public class FingerprintSettings extends SubSettings {
                             final GatekeeperPasswordProvider provider =
                                     new GatekeeperPasswordProvider(
                                             new LockPatternUtils(activity));
-                            mToken = provider.requestGatekeeperHat(data, challenge,
+                            mToken = provider.requestGatekeeperHat(gkPwHandle, challenge,
                                     mUserId);
                             mChallenge = challenge;
-                            provider.removeGatekeeperPasswordHandle(data, false);
+                            provider.removeGatekeeperPasswordHandle(gkPwHandle);
                             updateAddPreference();
                         });
             }

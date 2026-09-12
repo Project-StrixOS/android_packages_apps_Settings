@@ -25,7 +25,7 @@ import androidx.preference.PreferenceScreen;
 import com.android.internal.util.ArrayUtils;
 import com.android.settings.core.BasePreferenceController;
 
-import lineageos.health.HealthInterface;
+import strixos.health.HealthInterface;
 
 import java.util.ArrayList;
 import java.util.Arrays;

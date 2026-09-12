@@ -22,7 +22,7 @@ import com.android.settings.R
 import com.android.settingslib.metadata.BooleanValuePreference
 import com.android.settingslib.metadata.PreferenceMetadata
 import com.android.settingslib.preference.PreferenceBinding
-import lineageos.providers.LineageSettings
+import strixos.providers.LineageSettings
 
 class DarkModeBlackThemePreference(context: Context, private val darkModeStorage: DarkModeStorage) :
     PreferenceMetadata, BooleanValuePreference, PreferenceBinding {

@@ -70,7 +70,7 @@
         <!-- Battery light -->
         <lineageos.preference.LineagePartsPreference
             android:key="battery_lights"
-            settings:requiresConfig="@*lineageos.platform:integer/config_deviceLightCapabilities"
+            settings:requiresConfig="@*strixos.platform:integer/config_deviceLightCapabilities"
             settings:requiresConfigMask="64" />
     </com.android.settingslib.widget.UntitledPreferenceCategory>
 
@@ -83,11 +83,11 @@
 
         <!-- Charging speed -->
         <ListPreference
-            android:entries="@*lineageos.platform:array/charging_speed_entries"
-            android:entryValues="@*lineageos.platform:array/charging_speed_values"
+            android:entries="@*strixos.platform:array/charging_speed_entries"
+            android:entryValues="@*strixos.platform:array/charging_speed_values"
             android:key="charging_speed"
             android:summary="%s"
-            android:title="@*lineageos.platform:string/charging_speed"
+            android:title="@*strixos.platform:string/charging_speed"
             settings:controller="com.android.settings.fuelgauge.ChargingSpeedPreferenceController"
             settings:requiresService="lineagehealth" />
     </com.android.settingslib.widget.UntitledPreferenceCategory>

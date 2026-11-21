@@ -22,27 +22,19 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.android.settings.R
-import com.android.settings.Utils
-import com.android.settings.applications.AppStoreUtil
 import com.android.settingslib.spa.widget.preference.Preference
 import com.android.settingslib.spa.widget.preference.PreferenceModel
 import com.android.settingslib.spa.widget.ui.Category
-import com.android.settingslib.spaprivileged.framework.common.asUser
-import com.android.settingslib.spaprivileged.model.app.userHandle
 import java.text.DateFormat
 import java.util.Date
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 /**
  * A [Category] block showing the details of the package: package name, version, SDK, install date,
- * update date, install source and user id.
+ * update date and uid.
  *
  * Tapping the package name copies it to the clipboard.
  */
@@ -52,23 +44,6 @@ fun AppVersionDetailsBlock(packageInfo: PackageInfo) {
     val app = packageInfo.applicationInfo ?: return
     val unknown = stringResource(R.string.unknown)
     val dateFormat = remember { DateFormat.getDateInstance(DateFormat.MEDIUM) }
-
-    val installSource by produceState(initialValue = unknown, key1 = app.packageName) {
-        value = withContext(Dispatchers.IO) {
-            val userContext = context.asUser(app.userHandle)
-            val installerPackage =
-                AppStoreUtil.getInstallerPackageNameAndInstallSourceInfo(
-                    userContext,
-                    app.packageName,
-                ).first
-            if (installerPackage == null) {
-                unknown
-            } else {
-                (Utils.getApplicationLabel(context, installerPackage)
-                    ?: installerPackage).toString()
-            }
-        }
-    }
 
     val versionSummary = stringResource(
         R.string.app_version_summary,
@@ -114,12 +89,6 @@ fun AppVersionDetailsBlock(packageInfo: PackageInfo) {
             object : PreferenceModel {
                 override val title = stringResource(R.string.app_update_date_title)
                 override val summary = { updateDate }
-            },
-        )
-        Preference(
-            object : PreferenceModel {
-                override val title = stringResource(R.string.app_install_source_title)
-                override val summary = { installSource }
             },
         )
         Preference(

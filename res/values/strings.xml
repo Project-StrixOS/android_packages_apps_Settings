@@ -4883,7 +4883,7 @@
     <string name="app_install_details_different_initiating_package_summary">App installed from <xliff:g id="app_store1">%1$s</xliff:g> (via <xliff:g id="app_store2">%2$s</xliff:g>)</string>
 
     <!-- Manage applications, individual application info screen, section heading for the package details block [CHAR_LIMIT=25] -->
-    <string name="app_package_info_group_title">Package info</string>
+    <string name="app_package_info_group_title">App info</string>
     <!-- Manage applications, individual application info screen, label of the package name row. Tapping it copies the package name [CHAR_LIMIT=30] -->
     <string name="app_package_name_title">Package name</string>
     <!-- Manage applications, individual application info screen, toast shown after the package name is copied [CHAR_LIMIT=40] -->
@@ -4900,8 +4900,6 @@
     <string name="app_install_date_title">Install date</string>
     <!-- Manage applications, individual application info screen, label of the update date row [CHAR_LIMIT=30] -->
     <string name="app_update_date_title">Update date</string>
-    <!-- Manage applications, individual application info screen, label of the install source row [CHAR_LIMIT=30] -->
-    <string name="app_install_source_title">Install source</string>
     <!-- Manage applications, individual application info screen, label of the uid row [CHAR_LIMIT=30] -->
     <string name="app_uid_title">UID</string>
 

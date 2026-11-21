@@ -4882,6 +4882,29 @@
     <!-- Manage applications, individual application info screen, summary for the option which will trigger application info in its installer when the installing package and initiating package are different [CHAR_LIMIT=50] -->
     <string name="app_install_details_different_initiating_package_summary">App installed from <xliff:g id="app_store1">%1$s</xliff:g> (via <xliff:g id="app_store2">%2$s</xliff:g>)</string>
 
+    <!-- Manage applications, individual application info screen, section heading for the package details block [CHAR_LIMIT=25] -->
+    <string name="app_package_info_group_title">Package info</string>
+    <!-- Manage applications, individual application info screen, label of the package name row. Tapping it copies the package name [CHAR_LIMIT=30] -->
+    <string name="app_package_name_title">Package name</string>
+    <!-- Manage applications, individual application info screen, toast shown after the package name is copied [CHAR_LIMIT=40] -->
+    <string name="app_package_name_copied">Package name copied</string>
+    <!-- Manage applications, individual application info screen, label of the version row [CHAR_LIMIT=30] -->
+    <string name="app_version_title">Version</string>
+    <!-- Manage applications, individual application info screen, version summary showing the version name and the internal version code -->
+    <string name="app_version_summary"><xliff:g id="version_name" example="1.2.3">%1$s</xliff:g> (<xliff:g id="version_code" example="10203">%2$d</xliff:g>)</string>
+    <!-- Manage applications, individual application info screen, label of the SDK row [CHAR_LIMIT=30] -->
+    <string name="app_sdk_title">SDK</string>
+    <!-- Manage applications, individual application info screen, SDK summary showing the target and minimum SDK versions -->
+    <string name="app_sdk_summary">Target: <xliff:g id="target_sdk" example="35">%1$d</xliff:g>, Minimum: <xliff:g id="min_sdk" example="24">%2$d</xliff:g></string>
+    <!-- Manage applications, individual application info screen, label of the install date row [CHAR_LIMIT=30] -->
+    <string name="app_install_date_title">Install date</string>
+    <!-- Manage applications, individual application info screen, label of the update date row [CHAR_LIMIT=30] -->
+    <string name="app_update_date_title">Update date</string>
+    <!-- Manage applications, individual application info screen, label of the install source row [CHAR_LIMIT=30] -->
+    <string name="app_install_source_title">Install source</string>
+    <!-- Manage applications, individual application info screen, label of the uid row [CHAR_LIMIT=30] -->
+    <string name="app_uid_title">UID</string>
+
     <!-- Manage applications, individual application info screen, summary for the option which will trigger instant app info in it's installer [CHAR_LIMIT=50] -->
     <string name="instant_app_details_summary">More info on <xliff:g id="app_store">%1$s</xliff:g></string>
 

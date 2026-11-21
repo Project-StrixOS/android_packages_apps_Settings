@@ -2067,6 +2067,17 @@
     <string name="app_install_details_title" msgid="7783556181897142187">"应用详情"</string>
     <string name="app_install_details_summary" msgid="2013043219249992373">"应用安装来源：<xliff:g id="APP_STORE">%1$s</xliff:g>"</string>
     <string name="app_install_details_different_initiating_package_summary" msgid="6093306593167176688">"应用安装来源：<xliff:g id="APP_STORE1">%1$s</xliff:g>（通过<xliff:g id="APP_STORE2">%2$s</xliff:g>）"</string>
+    <string name="app_package_info_group_title">"软件包信息"</string>
+    <string name="app_package_name_title">"包名"</string>
+    <string name="app_package_name_copied">"包名已复制"</string>
+    <string name="app_version_title">"版本"</string>
+    <string name="app_version_summary"><xliff:g id="version_name" example="1.2.3">%1$s</xliff:g>（<xliff:g id="version_code" example="10203">%2$d</xliff:g>）</string>
+    <string name="app_sdk_title">"SDK"</string>
+    <string name="app_sdk_summary">"目标：<xliff:g id="target_sdk" example="35">%1$d</xliff:g>，最低：<xliff:g id="min_sdk" example="24">%2$d</xliff:g>"</string>
+    <string name="app_install_date_title">"安装日期"</string>
+    <string name="app_update_date_title">"更新日期"</string>
+    <string name="app_install_source_title">"安装来源"</string>
+    <string name="app_uid_title">"UID"</string>
     <string name="instant_app_details_summary" msgid="417197491598208216">"前往 <xliff:g id="APP_STORE">%1$s</xliff:g> 查看详细信息"</string>
     <string name="app_ops_running" msgid="6127474473137428721">"正在运行"</string>
     <string name="app_ops_never_used" msgid="9038133162371204506">"（从未使用）"</string>

@@ -222,7 +222,7 @@ private fun AppInfoSettings(packageInfoPresenter: PackageInfoPresenter) {
             AppInstallerInfoPreference(app)
         }
 
-        appInfoProvider.FooterAppVersion()
+        AppVersionDetailsBlock(packageInfo)
     }
 }
 
